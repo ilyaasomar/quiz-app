@@ -67,6 +67,11 @@ const SidebarItems = () => {
                             <SidebarMenuSubButton
                               asChild
                               isActive={child.isActive}
+                              className={cn(
+                                item.active
+                                  ? `${styles.secondaryBgColor} text-white hover:${styles.secondaryBgColor} hover:text-white focus:${styles.secondaryBgColor} focus:text-white active:${styles.secondaryBgColor} active:text-white data-[state=open]:${styles.secondaryBgColor} data-[state=open]:text-white`
+                                  : `hover:${styles.secondaryBgColor}`
+                              )}
                             >
                               <Link
                                 href={child.url}
@@ -77,7 +82,7 @@ const SidebarItems = () => {
                                     : `font-sans font-medium text-gray-700 hover:bg-gray-300 dark:text-gray-200 dark:hover:bg-gray-700`
                                 )}
                               >
-                                <span className="font-sans text-[14px] mt-2">
+                                <span className="font-sans text-[14px] py-2">
                                   {child.title}
                                 </span>
                               </Link>

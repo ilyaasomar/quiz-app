@@ -18,6 +18,8 @@ export function BreadcrumbCM() {
         return "Attempts";
       case "/results":
         return "Results";
+        case "/account/settings":
+        return "Settings";
       default:
         return "Dashboard";
     }
