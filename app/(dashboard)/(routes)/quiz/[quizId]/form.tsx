@@ -25,6 +25,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DateTimePicker } from "../components/datetime-picket";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -48,6 +51,9 @@ interface QuizFormProps {
 }
 
 export function QuizForm({ initialData }: QuizFormProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -57,8 +63,57 @@ export function QuizForm({ initialData }: QuizFormProps) {
     },
   });
 
+  // create and update mutation
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const url = initialData ? `/api/quiz/${initialData.id}` : "/api/quiz";
+      const method = initialData ? "PATCH" : "POST";
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: values.title,
+          startTime: values.startTime.toISOString(), // Convert to UTC ISO string
+          endTime: values.endTime.toISOString(),
+        }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save quiz");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // const data =
+      console.log(data);
+      toast.success(data?.message);
+      // Invalidate queries to refetch the quiz list
+      queryClient.invalidateQueries({ queryKey: ["quizzes"] });
+      // Reset form if creating new
+      if (!initialData) {
+        form.reset();
+      }
+      // Navigate back to quiz list
+      router.push("/quiz");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Something went wrong");
+    },
+  });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    // console.log({
+    //   title: values.title,
+    //   startTime: values.startTime, // Store as UTC in DB
+    //   endTime: values.endTime,
+    //   // For display purposes:
+    //   startTimeLocal: values.startTime.toLocaleString(),
+    //   endTimeLocal: values.endTime.toLocaleString(),
+    // });
+    mutation.mutate(values);
   }
 
   return (
@@ -122,9 +177,9 @@ export function QuizForm({ initialData }: QuizFormProps) {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex-col gap-2">
-            <Button type="submit" className="w-full md:w-auto">
-              Create Quiz
+          <CardFooter className="flex items-start">
+            <Button type="submit" className="rounded-sm cursor-pointer">
+              Save Changes
             </Button>
           </CardFooter>
         </Card>

@@ -25,10 +25,15 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      // Preserve time if it exists
+      // Preserve time if it exists, otherwise use current time
       if (selectedDateTime) {
         selectedDate.setHours(selectedDateTime.getHours());
         selectedDate.setMinutes(selectedDateTime.getMinutes());
+      } else {
+        // Use current time if no time was previously set
+        const now = new Date();
+        selectedDate.setHours(now.getHours());
+        selectedDate.setMinutes(now.getMinutes());
       }
       setSelectedDateTime(selectedDate);
       setDate(selectedDate);
@@ -41,7 +46,7 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
       const [hours, minutes] = time.split(":");
       const newDateTime = selectedDateTime
         ? new Date(selectedDateTime)
-        : new Date();
+        : new Date(); // Use current date if no date selected
       newDateTime.setHours(parseInt(hours));
       newDateTime.setMinutes(parseInt(minutes));
       setSelectedDateTime(newDateTime);
@@ -79,7 +84,9 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
           <Input
             type="time"
             value={
-              selectedDateTime ? format(selectedDateTime, "HH:mm") : "00:00"
+              selectedDateTime
+                ? format(selectedDateTime, "HH:mm")
+                : format(new Date(), "HH:mm") // Default to current time
             }
             onChange={handleTimeChange}
           />

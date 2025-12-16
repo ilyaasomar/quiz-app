@@ -9,13 +9,21 @@ const QuizPage = async () => {
 
   const quizData = await prisma.quiz.findMany({ where: { user_id: userId } });
 
-  const formattedQuiz = quizData.map((quiz, index) => ({
-    serialNo: index + 1,
-    id: quiz.id,
-    title: quiz.title,
-    startTime: quiz.startTime,
-    endTime: quiz.endTime,
-  }));
+  const formattedQuiz = quizData.map((quiz, index) => {
+    const diffMs = quiz.endTime.getTime() - quiz.startTime.getTime();
+
+    // Convert milliseconds to minutes
+    const durationMinutes = diffMs / (1000 * 60);
+
+    return {
+      serialNo: index + 1,
+      id: quiz.id,
+      title: quiz.title,
+      startTime: quiz.startTime,
+      endTime: quiz.endTime,
+      duration: durationMinutes,
+    };
+  });
   return (
     <div>
       <ShowQuizData data={formattedQuiz} />
