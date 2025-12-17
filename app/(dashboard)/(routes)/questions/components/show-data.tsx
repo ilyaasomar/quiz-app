@@ -5,31 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { columns } from "./column";
 import Link from "next/link";
+import { Decimal } from "@prisma/client/runtime/client";
 
-interface ShowQuizDataProps {
+interface ShowQuestionDataProps {
   data: {
     serialNo: number;
     id: string;
+    order: number;
     title: string;
-    startTime: Date;
-    endTime: Date;
-    duration: string | number;
+    mark: number | Decimal;
   }[];
 }
-const ShowQuizData = ({ data }: ShowQuizDataProps) => {
+const ShowQuestionData = ({ data }: ShowQuestionDataProps) => {
   return (
     <div className="flex flex-col gap-5">
       {/* top head */}
       <div className="flex items-center justify-between bg-accent/60 p-4 rounded-sm">
         {/* header */}
-        <Header title="Quiz" />
+        <Header title="Questions" />
         {/* button */}
-        <Link href="/quiz/create">
+        <Link href="/questions/create">
           <Button
             className={`rounded-sm px-6  cursor-pointer py-3 ${styles.secondaryBgColor} hover:${styles.secondaryBgColor} text-white hover:text-white dark:${styles.secondaryBgColor} text-white`}
           >
             <Plus className="w-6 h-6" />
-            New Quiz
+            New Question
           </Button>
         </Link>
       </div>
@@ -41,4 +41,4 @@ const ShowQuizData = ({ data }: ShowQuizDataProps) => {
   );
 };
 
-export default ShowQuizData;
+export default ShowQuestionData;

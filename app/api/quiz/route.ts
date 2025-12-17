@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
   const { title, startTime, endTime } = await request.json();
   //    title: 'Js QUiz',

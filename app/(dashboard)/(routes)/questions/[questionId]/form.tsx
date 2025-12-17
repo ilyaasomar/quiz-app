@@ -8,14 +8,13 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Quiz } from "@prisma/client";
+import { Question } from "@prisma/client";
 import {
   Card,
   CardContent,
@@ -24,7 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DateTimePicker } from "../components/datetime-picket";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -32,28 +30,20 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { styles } from "@/app/styles";
 import { useState } from "react";
 
-const formSchema = z
-  .object({
-    title: z.string().min(2, {
-      message: "Quiz title must be at least 2 characters.",
-    }),
-    startTime: z.date({
-      message: "Start date and time is required.",
-    }),
-    endTime: z.date({
-      message: "End date and time is required.",
-    }),
-  })
-  .refine((data) => data.endTime > data.startTime, {
-    message: "End time must be after start time.",
-    path: ["endTime"],
-  });
+const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "question title must be at least 2 characters.",
+  }),
+  mark: z.number().min(1, {
+    message: "marks must be at least 1 number.",
+  }),
+});
 
-interface QuizFormProps {
-  initialData: Quiz | null | undefined;
+interface QuestionFormProps {
+  initialData: Question | null | undefined;
 }
 
-export function QuizForm({ initialData }: QuizFormProps) {
+export function QuestionForm({ initialData }: QuestionFormProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -63,8 +53,7 @@ export function QuizForm({ initialData }: QuizFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       title: "",
-      startTime: undefined,
-      endTime: undefined,
+      mark: 0,
     },
   });
 
@@ -72,7 +61,9 @@ export function QuizForm({ initialData }: QuizFormProps) {
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       setLoading(true);
-      const url = initialData ? `/api/quiz/${initialData.id}` : "/api/quiz";
+      const url = initialData
+        ? `/api/question/${initialData.id}`
+        : "/api/question";
       const method = initialData ? "PATCH" : "POST";
       const response = await fetch(url, {
         method,
@@ -81,13 +72,12 @@ export function QuizForm({ initialData }: QuizFormProps) {
         },
         body: JSON.stringify({
           title: values.title,
-          startTime: values.startTime.toISOString(), // Convert to UTC ISO string
-          endTime: values.endTime.toISOString(),
+          mark: values.mark,
         }),
       });
       if (!response.ok) {
         const error = await response.json();
-        toast.error(error.error || "Failed to save quiz");
+        toast.error(error.error || "Failed to save question");
       }
 
       setLoading(false);
@@ -96,13 +86,13 @@ export function QuizForm({ initialData }: QuizFormProps) {
     onSuccess: (data) => {
       toast.success(data?.message);
       // Invalidate queries to refetch the quiz list
-      queryClient.invalidateQueries({ queryKey: ["quizzes"] });
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
       // Reset form if creating new
       if (!initialData) {
         form.reset();
       }
       // Navigate back to quiz list
-      router.push("/quiz");
+      router.push("/questions");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Something went wrong");
@@ -119,10 +109,8 @@ export function QuizForm({ initialData }: QuizFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Create Quiz</CardTitle>
-            <CardDescription>
-              Set up your quiz with a title, start time, and end time
-            </CardDescription>
+            <CardTitle>Create Question</CardTitle>
+            <CardDescription>Register up your question here</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-10 gap-y-4 md:gap-y-5">
@@ -130,26 +118,13 @@ export function QuizForm({ initialData }: QuizFormProps) {
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Quiz Title</FormLabel>
+                  <FormItem>
+                    <FormLabel>Question</FormLabel>
                     <FormControl>
-                      <Input placeholder="JavaScript Basics Quiz" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="startTime"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Start Date & Time</FormLabel>
-                    <FormControl>
-                      <DateTimePicker
-                        date={field.value}
-                        setDate={field.onChange}
+                      <Input
+                        placeholder="What is the correct syntax of JavaScript function"
+                        {...field}
+                        disabled={isSubmitting || loading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -159,14 +134,15 @@ export function QuizForm({ initialData }: QuizFormProps) {
 
               <FormField
                 control={form.control}
-                name="endTime"
+                name="mark"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>End Date & Time</FormLabel>
+                  <FormItem>
+                    <FormLabel>Marks</FormLabel>
                     <FormControl>
-                      <DateTimePicker
-                        date={field.value}
-                        setDate={field.onChange}
+                      <Input
+                        type="number"
+                        {...field}
+                        disabled={isSubmitting || loading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -179,12 +155,12 @@ export function QuizForm({ initialData }: QuizFormProps) {
             <Button
               type="button"
               variant={"outline"}
-              onClick={() => router.push("/quiz")}
+              onClick={() => router.push("/questions")}
               className="rounded-sm cursor-pointer"
               disabled={isSubmitting || loading}
             >
               <ArrowLeft className="h-5 w-5" />
-              Back to Quiz
+              Back to Questions
             </Button>
             <Button
               type="submit"

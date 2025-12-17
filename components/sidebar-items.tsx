@@ -49,8 +49,9 @@ const SidebarItems = () => {
                       tooltip={item.title}
                       className={cn(
                         "transition-colors",
-                        item.isActive &&
-                          `${styles.secondaryBgColor} text-white hover:${styles.secondaryBgColor}/90`
+                        item.isActive
+                          ? `${styles.secondaryBgColor} text-white font-sans font-medium hover:${styles.secondaryBgColor} hover:text-white focus:${styles.secondaryBgColor} focus:text-white active:${styles.secondaryBgColor} active:text-white`
+                          : `font-sans font-medium text-gray-700 hover:bg-gray-300 dark:text-gray-200 dark:hover:bg-gray-700`
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -64,24 +65,8 @@ const SidebarItems = () => {
                       {item.children.map((child) => {
                         return (
                           <SidebarMenuSubItem key={child.id}>
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={child.isActive}
-                              className={cn(
-                                item.active
-                                  ? `${styles.secondaryBgColor} text-white hover:${styles.secondaryBgColor} hover:text-white focus:${styles.secondaryBgColor} focus:text-white active:${styles.secondaryBgColor} active:text-white data-[state=open]:${styles.secondaryBgColor} data-[state=open]:text-white`
-                                  : `hover:${styles.secondaryBgColor}`
-                              )}
-                            >
-                              <Link
-                                href={child.url}
-                                className={cn(
-                                  "transition-all",
-                                  item.isActive
-                                    ? `${styles.secondaryBgColor} text-white font-sans font-medium hover:${styles.secondaryBgColor} hover:text-white focus:${styles.secondaryBgColor} focus:text-white active:${styles.secondaryBgColor} active:text-white`
-                                    : `font-sans font-medium text-gray-700 hover:bg-gray-300 dark:text-gray-200 dark:hover:bg-gray-700`
-                                )}
-                              >
+                            <SidebarMenuSubButton asChild>
+                              <Link href={child.url}>
                                 <span className="font-sans text-[14px] py-2">
                                   {child.title}
                                 </span>
@@ -102,7 +87,7 @@ const SidebarItems = () => {
                 asChild
                 className={cn(
                   item.active
-                    ? `${styles.secondaryBgColor} text-white hover:${styles.secondaryBgColor} hover:text-white focus:${styles.secondaryBgColor} focus:text-white active:${styles.secondaryBgColor} active:text-white data-[state=open]:${styles.secondaryBgColor} data-[state=open]:text-white `
+                    ? `${styles.secondaryBgColor} text-white hover:${styles.secondaryBgColor} hover:text-white focus:${styles.secondaryBgColor} focus:text-white active:${styles.secondaryBgColor} active:text-white data-[state=open]:${styles.secondaryBgColor} data-[state=open]:text-white`
                     : `hover:${styles.secondaryBgColor}`
                 )}
               >

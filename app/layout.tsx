@@ -39,9 +39,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProviders>
-            <Providers>{children}</Providers>
+            <Providers>
+              {children}
+              <Toaster />
+            </Providers>
           </QueryProviders>
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

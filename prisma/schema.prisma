@@ -96,10 +96,10 @@ model Quiz {
 }
 
 model Question {
-  id      String  @id @default(cuid())
+  id      String @id @default(cuid())
   order   Int
   title   String
-  mark    Decimal @db.Decimal()
+  mark    Int
   quiz_id String
   user_id String
 

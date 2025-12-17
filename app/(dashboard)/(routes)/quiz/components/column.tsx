@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import Actions from "./actions";
 
 export type QuizColumn = {
   serialNo: number;
@@ -37,8 +38,11 @@ export const columns: ColumnDef<QuizColumn>[] = [
   {
     accessorKey: "duration",
     header: "Duration",
+  },
+  {
+    header: "Actions",
     cell: ({ row }) => {
-      return row.original.duration + " Minute";
+      return <Actions id={row.original.id} />;
     },
   },
 ];
