@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Question } from "@prisma/client";
+import { Question, Quiz } from "@prisma/client";
 import {
   Card,
   CardContent,
@@ -29,10 +29,20 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { styles } from "@/app/styles";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "question title must be at least 2 characters.",
+  }),
+  quiz_id: z.string().min(1, {
+    message: "quiz must be select.",
   }),
   mark: z.number().min(1, {
     message: "marks must be at least 1 number.",
@@ -41,9 +51,10 @@ const formSchema = z.object({
 
 interface QuestionFormProps {
   initialData: Question | null | undefined;
+  quiz: Quiz[];
 }
 
-export function QuestionForm({ initialData }: QuestionFormProps) {
+export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -53,6 +64,7 @@ export function QuestionForm({ initialData }: QuestionFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       title: "",
+      quiz_id: "",
       mark: 0,
     },
   });
@@ -113,7 +125,7 @@ export function QuestionForm({ initialData }: QuestionFormProps) {
             <CardDescription>Register up your question here</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-10 gap-y-4 md:gap-y-5">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="title"
@@ -127,6 +139,35 @@ export function QuestionForm({ initialData }: QuestionFormProps) {
                         disabled={isSubmitting || loading}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="quiz_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quiz</FormLabel>
+                    <FormControl>
+                      <Select
+                        disabled={isSubmitting || loading}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        // defaultValue={field.value}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Quiz" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {quiz?.map((q) => (
+                            <SelectItem value={q.id}>{q.title}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
