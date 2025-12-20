@@ -1,4 +1,3 @@
-
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
@@ -10,6 +9,7 @@ const QuestionPage = async () => {
 
   const questionData = await prisma.question.findMany({
     where: { user_id: userId },
+    include: { quiz: true },
     orderBy: { createdAt: "asc" },
   });
 
@@ -19,6 +19,7 @@ const QuestionPage = async () => {
       id: question.id,
       order: question.order,
       title: question.title,
+      quiz: question.quiz.title,
       mark: question.mark,
     };
   });

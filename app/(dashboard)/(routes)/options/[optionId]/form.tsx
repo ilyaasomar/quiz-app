@@ -23,12 +23,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { styles } from "@/app/styles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -38,23 +38,25 @@ import {
 } from "@/components/ui/select";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "question title must be at least 2 characters.",
+  text: z.string().min(2, {
+    message: "text must be at least 2 characters.",
+  }),
+  question_id: z.string().min(1, {
+    message: "question must be select.",
   }),
   quiz_id: z.string().min(1, {
     message: "quiz must be select.",
   }),
-  mark: z.number().min(1, {
-    message: "marks must be at least 1 number.",
-  }),
+  isCorrect: z.boolean(),
 });
 
-interface QuestionFormProps {
+interface OptionFormProps {
   initialData: Question | null | undefined;
+  question: Question[];
   quiz: Quiz[];
 }
 
-export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
+export function OptionForm({ initialData, question, quiz }: OptionFormProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -63,19 +65,43 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      title: "",
+      text: "",
+      question_id: "",
       quiz_id: "",
-      mark: 0,
+      isCorrect: false,
     },
   });
 
+  // when user change quiz go the api and fetch questions depends on that quizid
+  const selectedQuizId = form.watch("quiz_id");
+  // console.log(selectedQuizId);
+
+  // this function calls api every time quiz id changes
+  const callQuestionApi = async (quizId: string) => {
+    const response = await fetch(`/api/question/${selectedQuizId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch questions");
+    }
+    return response.json();
+  };
+
+  // tanstack query
+  const {
+    data: questionsData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["question", selectedQuizId],
+    queryFn: () => callQuestionApi(selectedQuizId),
+    enabled: !!selectedQuizId,
+  });
+
+  console.log(questionsData);
   // create and update mutation
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       setLoading(true);
-      const url = initialData
-        ? `/api/question/${initialData.id}`
-        : "/api/question";
+      const url = initialData ? `/api/option/${initialData.id}` : "/api/option";
       const method = initialData ? "PATCH" : "POST";
       const response = await fetch(url, {
         method,
@@ -83,9 +109,10 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: values.title,
+          text: values.text,
+          question: values.question_id,
           quiz: values.quiz_id,
-          mark: values.mark,
+          isCorrect: values.isCorrect,
         }),
       });
       if (!response.ok) {
@@ -99,13 +126,13 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
     onSuccess: (data) => {
       toast.success(data?.message);
       // Invalidate queries to refetch the quiz list
-      queryClient.invalidateQueries({ queryKey: ["questions"] });
+      queryClient.invalidateQueries({ queryKey: ["options"] });
       // Reset form if creating new
       if (!initialData) {
         form.reset();
       }
       // Navigate back to quiz list
-      router.push("/questions");
+      router.push("/options");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Something went wrong");
@@ -122,29 +149,11 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Create Question</CardTitle>
-            <CardDescription>Register up your question here</CardDescription>
+            <CardTitle>Create Options</CardTitle>
+            <CardDescription>Register up your options here</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Question</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="What is the correct syntax of JavaScript function"
-                        {...field}
-                        disabled={isSubmitting || loading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="quiz_id"
@@ -156,7 +165,6 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
                         disabled={isSubmitting || loading}
                         onValueChange={field.onChange}
                         value={field.value}
-                        // defaultValue={field.value}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Quiz" />
@@ -176,6 +184,52 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
 
               <FormField
                 control={form.control}
+                name="question_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Question</FormLabel>
+                    <FormControl>
+                      <Select
+                        disabled={isSubmitting || loading}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Question" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {questionsData?.map((q: Question) => (
+                            <SelectItem value={q.id}>{q.title}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="text"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Question</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="ES6 is a modern way of writing JS & TS"
+                        {...field}
+                        disabled={isSubmitting || loading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
+                control={form.control}
                 name="mark"
                 render={({ field }) => (
                   <FormItem>
@@ -194,7 +248,7 @@ export function QuestionForm({ initialData, quiz }: QuestionFormProps) {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
           </CardContent>
           <CardFooter className="flex items-start gap-3">

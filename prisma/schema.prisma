@@ -108,7 +108,7 @@ model Question {
   options  Option[]
   attempts Attempt[]
 
-  createdAt DateTime
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 

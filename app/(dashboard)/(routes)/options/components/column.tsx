@@ -2,37 +2,36 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
-import { Decimal } from "@prisma/client/runtime/client";
 
-export type QuestionColumn = {
+export type OptionColumn = {
   serialNo: number;
   id: string;
-  order: number;
-  title: string;
+  text: string;
+  question: string;
   quiz: string;
-  mark: number | Decimal;
+  isCorrect: boolean;
 };
 
-export const columns: ColumnDef<QuestionColumn>[] = [
+export const columns: ColumnDef<OptionColumn>[] = [
   {
     accessorKey: "serialNo",
     header: "No",
   },
   {
-    accessorKey: "order",
-    header: "QNO",
+    accessorKey: "text",
+    header: "Text",
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: "question",
+    header: "Question",
   },
   {
     accessorKey: "quiz",
     header: "Quiz",
   },
   {
-    accessorKey: "mark",
-    header: "Marks",
+    accessorKey: "isCorrect",
+    header: "Correct",
   },
 
   {
