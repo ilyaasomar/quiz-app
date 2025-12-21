@@ -15,7 +15,7 @@ const Actions = ({ id }: ActionsProps) => {
   const deleteData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/question/${id}`, {
+      const response = await fetch(`/api/option/${id}`, {
         method: "DELETE",
         body: JSON.stringify(id),
       });
@@ -48,7 +48,7 @@ const Actions = ({ id }: ActionsProps) => {
         >
           <Edit
             className="h-5 w-5 text-white"
-            onClick={() => router.push(`/questions/${id}`)}
+            onClick={() => router.push(`/options/${id}`)}
           />
         </div>
         <div

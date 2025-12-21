@@ -3,6 +3,27 @@ import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
+// select questions based on quiz_id
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ quizId: string }> }
+) {
+  const { quizId } = await context.params;
+  console.log(quizId);
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user.id;
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+  try {
+    const questionData = await prisma.question.findMany({
+      where: { quiz_id: quizId, user_id: userId },
+    });
+    console.log(questionData);
+    return NextResponse.json(questionData, { status: 200 });
+  } catch (error) {}
+}
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { quizId: string } }
