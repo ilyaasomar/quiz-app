@@ -15,7 +15,6 @@ export async function PATCH(
   }
 
   try {
-    const { questionId } = await params;
     const { quiz_id, question_id, options } = await request.json();
 
     // Validate required fields
