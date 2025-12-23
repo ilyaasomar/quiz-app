@@ -36,7 +36,6 @@ const AttemptForm = ({ data }: AttemptFormProps) => {
   // 3️⃣ current question (THIS is the magic)
   const currentQuestion = data[currentIndex];
 
-  console.log(answers);
   // 4️⃣ save selected option
   const handleSelectOption = (optionId: string) => {
     setAnswers((prev) => ({
@@ -57,6 +56,9 @@ const AttemptForm = ({ data }: AttemptFormProps) => {
 
   const isLastQuestion = currentIndex === data.length - 1;
 
+  const handleSubmit = () => {
+    console.log(answers);
+  };
   return (
     <form className="space-y-6">
       <Card>
@@ -91,7 +93,9 @@ const AttemptForm = ({ data }: AttemptFormProps) => {
                 <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
-              <Button type="submit">Submit Quiz</Button>
+              <Button type="button" onClick={handleSubmit}>
+                Submit Quiz
+              </Button>
             )}
           </div>
         </CardContent>
