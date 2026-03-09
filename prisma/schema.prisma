@@ -131,19 +131,15 @@ model Option {
 
 model Attempt {
   id          String @id @default(cuid())
-  text        String
   option_id   String
   question_id String
   quiz_id     String
-  user_d      String
-
-  startTime DateTime
-  endTime   DateTime
+  user_id     String
 
   option   Option   @relation(fields: [option_id], references: [id])
   question Question @relation(fields: [question_id], references: [id])
   quiz     Quiz     @relation(fields: [quiz_id], references: [id])
-  user     User     @relation(fields: [user_d], references: [id])
+  user     User     @relation(fields: [user_id], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

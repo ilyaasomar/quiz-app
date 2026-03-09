@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +10,9 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OptionCard from "./optionCard";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface AttemptFormProps {
   data: {
@@ -21,12 +23,14 @@ interface AttemptFormProps {
       text: string;
     }[];
     quiz: {
+      id: string;
       title: string;
     };
   }[];
 }
 
 const AttemptForm = ({ data }: AttemptFormProps) => {
+  const router = useRouter();
   // 1️⃣ which question page we are on
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -56,8 +60,39 @@ const AttemptForm = ({ data }: AttemptFormProps) => {
 
   const isLastQuestion = currentIndex === data.length - 1;
 
+  const mutation = useMutation({
+    mutationFn: async (values: {
+      quizId: string;
+      answers: { questionId: string; optionId: string }[];
+    }) => {
+      const response = await fetch("/api/attempts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast.success(data?.message);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error("Something went wrong");
+    },
+  });
   const handleSubmit = () => {
-    console.log(answers);
+    const { quizId, _, ...answersData } = answers;
+    const payload = {
+      quizId: data[0]?.quiz?.id,
+      answers: Object.entries(answersData).map(([questionId, optionId]) => ({
+        questionId,
+        optionId,
+      })),
+    };
+    mutation.mutate(payload);
+    console.log(payload);
   };
   return (
     <form className="space-y-6">

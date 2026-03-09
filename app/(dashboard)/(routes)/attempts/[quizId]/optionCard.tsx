@@ -24,7 +24,7 @@ const OptionCard = ({
 
       {question.options.map((option, index) => {
         const isSelected = selectedOptionId === option.id;
-        console.log(isSelected);
+        // console.log(isSelected);
         return (
           <div
             key={option.id}
