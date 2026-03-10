@@ -119,7 +119,7 @@ export async function PATCH(
 // delete function
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { optionId: string } },
+  context: { params: Promise<{ optionId: string }> },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
@@ -127,10 +127,9 @@ export async function DELETE(
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { optionId } = await context.params;
 
   try {
-    const { optionId } = await params;
-
     // First, find the option to get the question_id
     const option = await prisma.option.findFirst({
       where: {
