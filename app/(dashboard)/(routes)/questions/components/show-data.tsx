@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { columns } from "./column";
 import Link from "next/link";
-import { Decimal } from "@prisma/client/runtime/client";
 
 interface ShowQuestionDataProps {
   data: {
@@ -13,7 +12,8 @@ interface ShowQuestionDataProps {
     id: string;
     order: number;
     title: string;
-    mark: number | Decimal;
+    quiz: string;
+    mark: number;
   }[];
 }
 const ShowQuestionData = ({ data }: ShowQuestionDataProps) => {

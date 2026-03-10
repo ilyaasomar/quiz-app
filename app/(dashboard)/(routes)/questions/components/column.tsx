@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
-import { Decimal } from "@prisma/client/runtime/client";
 
 export type QuestionColumn = {
   serialNo: number;
@@ -10,7 +9,7 @@ export type QuestionColumn = {
   order: number;
   title: string;
   quiz: string;
-  mark: number | Decimal;
+  mark: number;
 };
 
 export const columns: ColumnDef<QuestionColumn>[] = [
