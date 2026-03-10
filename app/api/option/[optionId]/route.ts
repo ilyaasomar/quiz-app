@@ -5,8 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: Promise<{ questionId: string }> },
+  context: { params: Promise<{ optionId: string }> },
 ) {
+  const { optionId } = await context.params;
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
 
