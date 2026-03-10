@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { BookOpen, ClipboardList, MousePointerClick } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
@@ -37,7 +36,7 @@ export default async function DashboardPage() {
     };
   });
   return (
-    <div className="flex-1 bg-gray-50 dark:bg-[#171717] min-h-screen p-8 space-y-8">
+    <div className="bg-gray-50 dark:bg-[#171717] min-h-screen p-6 py-2 space-y-8">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         .dash-font { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -60,8 +59,8 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           Dashboard
         </h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Welcome back! Here's what's going on.
+        <p className="text-md text-green-600 mt-1">
+          Welcome back! <strong>{session?.user?.name}</strong> .
         </p>
       </div>
 
