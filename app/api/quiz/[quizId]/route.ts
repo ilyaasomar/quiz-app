@@ -24,11 +24,11 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { quizId: string } },
+  context: { params: Promise<{ quizId: string }> },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
-  const { quizId } = await params;
+  const { quizId } = await context.params;
 
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
