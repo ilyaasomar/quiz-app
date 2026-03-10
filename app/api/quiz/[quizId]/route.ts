@@ -6,10 +6,9 @@ import { NextRequest, NextResponse } from "next/server";
 // select questions based on quiz_id
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ quizId: string }> }
+  context: { params: Promise<{ quizId: string }> },
 ) {
   const { quizId } = await context.params;
-  console.log(quizId);
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
   if (!userId) {
@@ -19,14 +18,13 @@ export async function GET(
     const questionData = await prisma.question.findMany({
       where: { quiz_id: quizId, user_id: userId },
     });
-    console.log(questionData);
     return NextResponse.json(questionData, { status: 200 });
   } catch (error) {}
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { quizId: string } }
+  { params }: { params: { quizId: string } },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
@@ -50,26 +48,26 @@ export async function PATCH(
     if (!quiz) {
       return NextResponse.json(
         { message: "Quiz not updated!" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     return NextResponse.json(
       { message: "Quiz updated successfully!" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 505 }
+      { status: 505 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ quizId: string }> }
+  context: { params: Promise<{ quizId: string }> },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
@@ -88,13 +86,13 @@ export async function DELETE(
 
     return NextResponse.json(
       { message: "Quiz deleted successfully!" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 505 }
+      { status: 505 },
     );
   }
 }

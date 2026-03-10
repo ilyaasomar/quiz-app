@@ -5,10 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { quizId: string } },
+  context: { params: Promise<{ quizId: string }> },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
+  const { quizId } = await context.params;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,7 +17,7 @@ export async function GET(
 
   try {
     const attempts = await prisma.attempt.findMany({
-      where: { quiz_id: params.quizId, user_id: userId },
+      where: { quiz_id: quizId, user_id: userId },
       include: {
         question: { select: { title: true, mark: true, order: true } },
         option: { select: { text: true, isCorrect: true } },

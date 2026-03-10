@@ -4,6 +4,9 @@ A **full-stack quiz application** built with **Next.js**, **TypeScript**, **Pris
 
 ---
 
+Demo Here("").
+NB: you can register your own user by sign-up form
+
 ## Features
 
 - ✅ Timed quizzes
@@ -12,7 +15,6 @@ A **full-stack quiz application** built with **Next.js**, **TypeScript**, **Pris
 - ✅ Quiz attempt tracking
 - ✅ Collapsible sidebar UI
 - ✅ Modern responsive dashboard
-- ✅ Role-agnostic MVP (everyone can take quizzes)
 
 ---
 
@@ -23,6 +25,7 @@ A **full-stack quiz application** built with **Next.js**, **TypeScript**, **Pris
 - **Database:** PostgreSQL
 - **UI Components:** shadcn/ui, Tailwind CSS
 - **Icons:** Lucide React, React Icons
+- **Authentication:** Better Auth
 
 ---
 

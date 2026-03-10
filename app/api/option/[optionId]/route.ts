@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { questionId: string } }
+  context: { params: Promise<{ questionId: string }> },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
@@ -24,7 +24,7 @@ export async function PATCH(
           error:
             "Missing required fields: quiz_id, question_id, and options array",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -32,18 +32,18 @@ export async function PATCH(
     if (options.length < 2) {
       return NextResponse.json(
         { error: "At least 2 options are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if exactly one option is marked as correct
     const correctOptionsCount = options.filter(
-      (opt: any) => opt.isCorrect
+      (opt: any) => opt.isCorrect,
     ).length;
     if (correctOptionsCount !== 1) {
       return NextResponse.json(
         { error: "Exactly one option must be marked as correct" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function PATCH(
     if (!quiz) {
       return NextResponse.json(
         { error: "Quiz not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -66,7 +66,7 @@ export async function PATCH(
     if (!question) {
       return NextResponse.json(
         { error: "Question not found or does not belong to the selected quiz" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -92,8 +92,8 @@ export async function PATCH(
               user_id: userId,
               createdAt: new Date(),
             },
-          })
-        )
+          }),
+        ),
       );
 
       return createdOptions;
@@ -104,13 +104,13 @@ export async function PATCH(
         message: "Options updated successfully!",
         data: result,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating options:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,7 +118,7 @@ export async function PATCH(
 // delete function
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { optionId: string } }
+  { params }: { params: { optionId: string } },
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
@@ -141,7 +141,7 @@ export async function DELETE(
     if (!option) {
       return NextResponse.json(
         { error: "Option not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -158,13 +158,13 @@ export async function DELETE(
         message: "All options for this question deleted successfully!",
         deletedCount: deleteResult.count,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error deleting options:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
