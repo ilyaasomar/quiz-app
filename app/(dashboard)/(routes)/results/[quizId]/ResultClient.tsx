@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { styles } from "@/app/styles";
 
 interface Attempt {
   questionTitle: string;
@@ -35,7 +36,11 @@ export default function ResultClient({ data }: { data: ResultData }) {
   return (
     <div className="max-w-3xl mx-auto py-10 px-4 space-y-6">
       <Link href="/results">
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button
+          variant="default"
+          size="sm"
+          className={`${styles.secondaryBgColor} hover:${styles.secondaryBgColor} cursor-pointer gap-2 mb-2 rounded-sm`}
+        >
           <ArrowLeft className="w-4 h-4" />
           Back to Results
         </Button>

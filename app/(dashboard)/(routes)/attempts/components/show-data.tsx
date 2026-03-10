@@ -14,6 +14,12 @@ interface ShowQuizAttemptDataProps {
     startTime: Date;
     endTime: Date;
     duration: string | number;
+    attempt: {
+      quiz_id: string;
+      question_id: string;
+      option_id: string;
+      user_id: string;
+    }[];
   }[];
 }
 const ShowQuizAttemptData = ({ data }: ShowQuizAttemptDataProps) => {
@@ -23,17 +29,8 @@ const ShowQuizAttemptData = ({ data }: ShowQuizAttemptDataProps) => {
       <div className="flex items-center justify-between bg-accent/60 p-4 rounded-sm">
         {/* header */}
         <Header title="Quiz Attempt" />
-        {/* button */}
-        {/* <Link href="/quiz/create">
-          <Button
-            className={`rounded-sm px-6  cursor-pointer py-3 ${styles.secondaryBgColor} hover:${styles.secondaryBgColor} text-white hover:text-white dark:${styles.secondaryBgColor} text-white`}
-          >
-            <Plus className="w-6 h-6" />
-            New Quiz
-          </Button>
-        </Link> */}
       </div>
-      {/* datatable */}
+      {/* data table */}
       <div className="py-4">
         <DataTable columns={columns} data={data} searchKey="title" />
       </div>

@@ -7,7 +7,10 @@ const QuizPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
 
-  const quizData = await prisma.quiz.findMany({ where: { user_id: userId }, orderBy:{createdAt:"asc"} });
+  const quizData = await prisma.quiz.findMany({
+    where: { user_id: userId },
+    orderBy: { createdAt: "asc" },
+  });
 
   const formattedQuiz = quizData.map((quiz, index) => {
     const diffMs = quiz.endTime.getTime() - quiz.startTime.getTime();

@@ -13,6 +13,17 @@ const QuizAttemptPage = async () => {
     orderBy: { createdAt: "desc" },
   });
 
+  const attempt = await prisma.attempt.findMany({
+    where: { user_id: userId },
+    select: {
+      quiz_id: true,
+      question_id: true,
+      option_id: true,
+      user_id: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
   const formattedQuiz = quizData.map((quiz, index) => {
     const diffMs = quiz.endTime.getTime() - quiz.startTime.getTime();
 
@@ -40,8 +51,11 @@ const QuizAttemptPage = async () => {
       startTime: quiz.startTime,
       endTime: quiz.endTime,
       duration: durationTime,
+      attempt: attempt.filter((at) => at.quiz_id === quiz.id),
     };
   });
+
+  console.log(attempt);
   return (
     <div>
       <ShowQuizAttemptData data={formattedQuiz} />

@@ -10,6 +10,12 @@ export type QuizAttemptColumn = {
   startTime: Date;
   endTime: Date;
   duration: string | number;
+  attempt: {
+    quiz_id: string;
+    question_id: string;
+    option_id: string;
+    user_id: string;
+  }[];
 };
 
 export const columns: ColumnDef<QuizAttemptColumn>[] = [
@@ -47,6 +53,7 @@ export const columns: ColumnDef<QuizAttemptColumn>[] = [
           id={row.original.id}
           endTime={row.original.endTime}
           startTime={row.original.startTime}
+          attempt={row.original.attempt}
         />
       );
     },

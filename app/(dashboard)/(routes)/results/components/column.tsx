@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { styles } from "@/app/styles";
 
